@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useSelector, useDispatch } from "react-redux";
 import { colors } from "./store";
@@ -52,7 +53,7 @@ export const Creature = ({ navigation }) => {
 
   const renderFooter = () => {
     if (loading) {
-      return <ActivityIndicator size="large" color="0000ff" />;
+      return <ActivityIndicator size="small" color="#0000ff" />;
     }
     return (
       <TouchableOpacity

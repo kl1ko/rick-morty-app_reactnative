@@ -3630,6 +3630,14 @@ expo-status-bar@~2.0.1:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-2.0.1.tgz#fc07726346dc30fbb68aadb0d7890b34fba42eee"
   integrity sha512-AkIPX7jWHRPp83UBZ1iXtVvyr0g+DgBVvIXTtlmPtmUsm8Vq9Bb5IGj86PW8osuFlgoTVAg7HI/+Ok7yEYwiRg==
 
+expo-system-ui@~4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/expo-system-ui/-/expo-system-ui-4.0.7.tgz#7ea463bebc48ea6f799a9ab117f80975471c2471"
+  integrity sha512-x1VDoE7J8m4wxTgWyUBEYqsf1KabIg64dOLzYiZjg0cWOE6o6kX2Mg6n3abVWEEC01WhZBoo9+Urcce/6ZJ3tg==
+  dependencies:
+    "@react-native/normalize-colors" "0.76.6"
+    debug "^4.3.2"
+
 expo@~52.0.25:
   version "52.0.25"
   resolved "https://registry.yarnpkg.com/expo/-/expo-52.0.25.tgz#06f074b92c8d3f7a005c088c0debd1d227849991"
@@ -6346,6 +6354,11 @@ react-native-gesture-handler@^2.22.0:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
+
+react-native-loader-kit@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-loader-kit/-/react-native-loader-kit-2.0.8.tgz#2d3b98805ec7edb857d38ee27402c05c60338980"
+  integrity sha512-mteFh4HF5uMjazLPxEE4lWw3aCWLH5jiUbqVZU4TtOWC+WV/Kck+ipDwsGzEqVxaIXh6bNoti1fkziNGLiuDJg==
 
 react-native-paper@^5.13.1:
   version "5.13.1"

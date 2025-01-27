@@ -39,7 +39,11 @@ export const CharacterDetail = ({ route, navigation }) => {
   }, [characterId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="0000ff" />;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="small" color="0000ff" />
+      </View>
+    );
   }
 
   if (error) {
