@@ -3,18 +3,21 @@ import {
   View,
   Text,
   Image,
-  ScrollView,
   FlatList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
 
-export const Creature = () => {
+import { useSelector, useDispatch } from "react-redux";
+import { colors } from "./store";
+
+export const Creature = ({ navigation }) => {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState("all"); // Default filter
+  const [filter, setFilter] = useState("all");
+  const isBrightTheme = useSelector((state) => state.theme.isDarkTheme);
 
   const fetchCharacters = async (pageNumber) => {
     setLoading(true);
@@ -25,7 +28,6 @@ export const Creature = () => {
       const data = await response.json();
       const newCharacters = data.results.slice(0, 20);
 
-      // Проверка на дубликаты
       setCharacters((prevCharacters) => {
         const existingIds = new Set(prevCharacters.map((char) => char.id));
         const uniqueNewCharacters = newCharacters.filter(
@@ -54,7 +56,12 @@ export const Creature = () => {
     }
     return (
       <TouchableOpacity
-        style={styles.loadMoreButton}
+        style={[
+          styles.loadMoreButton,
+          {
+            backgroundColor: isBrightTheme ? colors.gray : colors.blue,
+          },
+        ]}
         onPress={loadMoreCharacters}
       >
         <Text style={styles.loadMoreText}>Load more</Text>
@@ -69,7 +76,7 @@ export const Creature = () => {
       case "Dead":
         return "red";
       case "unknown":
-        return "gray";
+        return isBrightTheme ? "white" : colors.gray;
       default:
         return "black";
     }
@@ -87,52 +94,103 @@ export const Creature = () => {
   });
 
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.cardImage} />
-      <View style={styles.cardDescription}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <View style={styles.statusContainer}>
-          <Text style={styles.status}>Status: {item.status}</Text>
-          <View
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("CharacterDetail", { characterId: item.id });
+      }}
+    >
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: isBrightTheme ? colors.gray : colors.midblue },
+        ]}
+      >
+        <Image source={{ uri: item.image }} style={styles.cardImage} />
+        <View style={styles.cardDescription}>
+          <Text
             style={[
-              styles.statusDot,
-              { backgroundColor: getStatusColor(item.status) },
+              styles.cardTitle,
+              { color: isBrightTheme ? "black" : "white" },
             ]}
-          />
+          >
+            {item.name}
+          </Text>
+          <View style={styles.statusContainer}>
+            <Text
+              style={[
+                styles.status,
+                { color: isBrightTheme ? "black" : "white" },
+              ]}
+            >
+              Status: {item.status}
+            </Text>
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: getStatusColor(item.status) },
+              ]}
+            />
+          </View>
+          <Text
+            style={[
+              styles.species,
+              { color: isBrightTheme ? "black" : "white" },
+            ]}
+          >
+            Species: {item.species}
+          </Text>
         </View>
-        <Text style={styles.species}>Species: {item.species}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
-  const [textColor, setTextColor] = useState("white");
+  const handleSettingsPress = () => {
+    console.log(navigation.navigate("Settings"));
+  };
 
   return (
     <>
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isBrightTheme ? "white" : colors.darkblue },
+        ]}
+      >
         <View style={styles.filterContainer}>
           <Text
-            style={{
-              color: textColor,
-
-              fontSize: 16,
-              color: "#fff",
-              backgroundColor: "#007bff",
-              width: 150,
-              paddingVertical: 4,
-              borderRadius: 10,
-              textAlign: "center",
-              marginBottom: 8,
-            }}
+            style={[
+              { fontSize: 16 },
+              { color: "#fff" },
+              { backgroundColor: isBrightTheme ? colors.gray : colors.midblue },
+              { width: 150 },
+              { paddingVertical: 4 },
+              { borderRadius: 10 },
+              { textAlign: "center" },
+              { marginBottom: 8 },
+              { color: isBrightTheme ? "black" : "white" },
+            ]}
           >
             Filter by status
           </Text>
-          <View style={styles.picker}>
+          <View
+            style={[styles.picker, { flexDirection: "row", flexWrap: "wrap" }]}
+          >
             <TouchableOpacity onPress={() => handleFilterChange("all")}>
               <Text
                 style={[
-                  filter === "all" ? styles.selectedFilter : styles.filterText,
-                  { color: textColor }, // Добавляем цвет текста
+                  filter === "all"
+                    ? {
+                        backgroundColor: isBrightTheme
+                          ? colors.gray
+                          : colors.midblue,
+                        fontSize: 16,
+                        width: 125,
+                        paddingVertical: 4,
+                        borderRadius: 10,
+                        textAlign: "center",
+                      }
+                    : styles.filterText,
+                  { color: isBrightTheme ? "black" : "white" },
                 ]}
               >
                 All
@@ -142,9 +200,19 @@ export const Creature = () => {
               <Text
                 style={[
                   filter === "Alive"
-                    ? styles.selectedFilter
+                    ? {
+                        backgroundColor: isBrightTheme
+                          ? colors.gray
+                          : colors.midblue,
+                        fontSize: 16,
+                        width: 125,
+                        paddingVertical: 4,
+                        borderRadius: 10,
+                        textAlign: "center",
+                      }
                     : styles.filterText,
-                  { color: textColor },
+                  { color: isBrightTheme ? "black" : "white" },
+                  ,
                 ]}
               >
                 Alive
@@ -153,8 +221,19 @@ export const Creature = () => {
             <TouchableOpacity onPress={() => handleFilterChange("Dead")}>
               <Text
                 style={[
-                  filter === "Dead" ? styles.selectedFilter : styles.filterText,
-                  { color: textColor },
+                  filter === "Dead"
+                    ? {
+                        backgroundColor: isBrightTheme
+                          ? colors.gray
+                          : colors.midblue,
+                        fontSize: 16,
+                        width: 125,
+                        paddingVertical: 4,
+                        borderRadius: 10,
+                        textAlign: "center",
+                      }
+                    : styles.filterText,
+                  { color: isBrightTheme ? "black" : "white" },
                 ]}
               >
                 Dead
@@ -164,9 +243,18 @@ export const Creature = () => {
               <Text
                 style={[
                   filter === "unknown"
-                    ? styles.selectedFilter
+                    ? {
+                        backgroundColor: isBrightTheme
+                          ? colors.gray
+                          : colors.midblue,
+                        fontSize: 16,
+                        width: 125,
+                        paddingVertical: 4,
+                        borderRadius: 10,
+                        textAlign: "center",
+                      }
                     : styles.filterText,
-                  { color: textColor },
+                  { color: isBrightTheme ? "black" : "white" },
                 ]}
               >
                 Unknown
@@ -176,24 +264,52 @@ export const Creature = () => {
         </View>
         <FlatList
           data={filteredCharacters}
-          // data={characters}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           ListFooterComponent={renderFooter}
         />
+        <Footer onSettingsPress={handleSettingsPress} />
       </View>
     </>
+  );
+};
+
+const Footer = ({ onSettingsPress }) => {
+  const isBrightTheme = useSelector((state) => state.theme.isDarkTheme);
+  return (
+    <View style={styles.footerContainer}>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            backgroundColor: isBrightTheme ? colors.gray : colors.midblue,
+          },
+        ]}
+        onPress={onSettingsPress}
+      >
+        <Text
+          style={[
+            styles.buttonText,
+            {
+              color: "white",
+            },
+          ]}
+        >
+          Settings
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0a192f",
     padding: 4,
     color: "white",
     justifyContent: "center",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   wrapper: {
     flex: 1,
@@ -202,19 +318,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     flexDirection: "row",
     flexWrap: "wrap",
-
     width: "100%",
+    overflow: "hidden",
   },
 
   card: {
     marginBottom: 8,
-    gap: 16,
     display: "flex",
     width: 350,
     height: 200,
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "rgba(23, 42, 69, 0.8)",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -225,26 +339,17 @@ const styles = StyleSheet.create({
 
     padding: 16,
   },
-  cardHover: {
-    backgroundColor: "rgba(47, 85, 137, 0.8)",
-  },
-  cardTitle: {
-    color: "white",
-  },
-  cardImageWrapper: {
-    flex: 1,
-    height: "100%",
-  },
   cardImage: {
     flex: 1,
-    resizeMode: "cover",
+    // resizeMode: "cover",
     borderWidth: 1,
     width: "100px",
     height: "100%",
+    marginTop: 6,
   },
   cardDescription: {
     flex: 1,
-    marginRight: 8,
+    marginLeft: 8,
   },
   title: {
     fontSize: 25,
@@ -260,7 +365,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     fontSize: 16,
     color: "#ffffff",
-    backgroundColor: "rgba(23, 42, 69, 0.8)",
     borderRadius: 50,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -273,7 +377,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 20,
     elevation: 6,
-    backgroundColor: "rgba(47, 85, 137, 0.8)",
   },
   statusContainer: {
     flexDirection: "row",
@@ -338,27 +441,19 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     alignItems: "center",
-    padding: 20,
+    padding: 10,
+
+    width: 500,
+    justifyContent: "space-between",
   },
   filterText: {
     fontSize: 16,
-    color: "#333",
+
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     textAlign: "center",
   },
-  selectedFilter: {
-    fontSize: 16,
-    color: "#fff",
-    backgroundColor: "rgba(23, 42, 69, 0.8)",
-    width: 150,
-
-    paddingVertical: 4,
-    borderRadius: 10,
-    textAlign: "center",
-  },
-
   loadMoreButton: {
     backgroundColor: "#007BFF",
     padding: 15,
@@ -369,11 +464,43 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
-    elevation: 5, // Эффект поднятия для Android
+    elevation: 5,
   },
   loadMoreText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  footerContainer: {
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    borderRadius: 16,
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  picker: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginBottom: 10,
   },
 });
